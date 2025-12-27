@@ -1,2 +1,2 @@
 # kommunalka-calc
-Simple Django service for entering meter readings and generating total utility bills.
+Простой сервис на Django для ввода показаний счётчиков и расчёта итоговых коммунальных платежей.
