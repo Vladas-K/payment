@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import MeterReading
 from .forms import MeterForm
+from .models import MeterReading
 
 TARIFF_COLD = 65.77
 TARIFF_HOT = 322.5
@@ -8,6 +8,7 @@ TARIFF_SEWAGE = 51.62
 
 def calculate(request):
     result = None
+    last = MeterReading.objects.order_by('-created_at').first()
 
     if request.method == "POST":
         form = MeterForm(request.POST)
@@ -40,9 +41,18 @@ def calculate(request):
                 "total": round(obj.total, 2),
             }
     else:
-        form = MeterForm()
+        if last:
+            form = MeterForm(initial={
+                "cold_prev": last.cold_curr,
+                "hot_prev": last.hot_curr,
+                "electricity": last.electricity,
+                "internet": last.internet,
+            })
+        else:
+            form = MeterForm()
 
     return render(request, "calc.html", {"form": form, "result": result})
+
 
 
 def history(request):
