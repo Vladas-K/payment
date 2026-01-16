@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, sessions
 from .models import MeterReading
 
 @admin.register(MeterReading)
@@ -43,4 +43,10 @@ class MeterReadingAdmin(admin.ModelAdmin):
             )
         }),
     )
+
+
+@admin.register(sessions.models.Session)
+class SessionAdmin(admin.ModelAdmin):
+    list_display = ("session_key", "expire_date")
+    readonly_fields = ("session_key", "session_data", "expire_date")        
 
