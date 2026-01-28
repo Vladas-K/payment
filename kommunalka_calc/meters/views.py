@@ -8,7 +8,7 @@ TARIFF_SEWAGE = 51.62
 
 
 def calculate(request):
-    last = MeterReading.objects.order_by('-created_at').first()
+    last = MeterReading.objects.order_by("-created_at").first()
 
     if request.method == "POST":
         form = MeterForm(request.POST)
@@ -24,11 +24,11 @@ def calculate(request):
             obj.hot_cost = hot_used * TARIFF_HOT
             obj.sewage_cost = sewage_used * TARIFF_SEWAGE
             obj.total = (
-                obj.cold_cost +
-                obj.hot_cost +
-                obj.sewage_cost +
-                obj.electricity +
-                obj.internet
+                obj.cold_cost
+                + obj.hot_cost
+                + obj.sewage_cost
+                + obj.electricity
+                + obj.internet
             )
 
             obj.save()
@@ -37,18 +37,24 @@ def calculate(request):
             return redirect("meters:calculate")
 
         # ❗ Если форма НЕвалидна — возвращаем шаблон с ошибками
-        return render(request, "calc.html", {
-            "form": form,
-            "result": None,
-        })
+        return render(
+            request,
+            "calc.html",
+            {
+                "form": form,
+                "result": None,
+            },
+        )
 
     # GET-запрос
-    form = MeterForm(initial={
-        "cold_prev": last.cold_curr if last else "",
-        "hot_prev": last.hot_curr if last else "",
-        "electricity": last.electricity if last else "",
-        "internet": last.internet if last else "",
-    })
+    form = MeterForm(
+        initial={
+            "cold_prev": last.cold_curr if last else "",
+            "hot_prev": last.hot_curr if last else "",
+            "electricity": last.electricity if last else "",
+            "internet": last.internet if last else "",
+        }
+    )
 
     result = None
     result_id = request.session.pop("last_result_id", None)
@@ -67,5 +73,5 @@ def calculate(request):
 
 
 def history(request):
-    records = MeterReading.objects.order_by('-created_at')
+    records = MeterReading.objects.order_by("-created_at")
     return render(request, "history.html", {"records": records})
